@@ -1,0 +1,22 @@
+SELECT count(distinct ?metabolite) as ?metaboliteCount 
+WHERE {
+  ?metabolite a wp:Metabolite ;
+  dcterms:isPartOf ?pw.
+  ?pw a wp:Pathway;
+  dc:title ?title ;
+  wp:organism ?organism ;
+  wp:organismName "Homo sapiens"^^xsd:string ;
+  wp:ontologyTag ?pwo.
+  FILTER (?pwo != cur:Reactome_Approved)
+  OPTIONAL { ?metabolite wp:bdbWikidata ?wikidata . }
+  OPTIONAL { ?metabolite wp:bdbChEBI ?chebi . }
+  OPTIONAL { ?metabolite wp:bdbHmdb ?hmdb . }
+  OPTIONAL { ?metabolite wp:bdbChemspider ?chemspider . }
+  OPTIONAL { ?metabolite wp:bdbPubChem ?pubchem . }
+
+  FILTER (!BOUND(?wikidata))
+  FILTER (!BOUND(?chebi))
+  FILTER (!BOUND(?hmdb))
+  FILTER (!BOUND(?chemspider))
+  FILTER (!BOUND(?pubchem))
+}
