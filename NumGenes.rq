@@ -1,0 +1,12 @@
+SELECT DISTINCT count(?ensId) as ?UniqueEnsembl
+WHERE {
+  ?dataNodes a wp:DataNode ;
+  wp:bdbEnsembl ?ensId ;
+  dcterms:isPartOf ?pw.
+  ?pw a wp:Pathway;
+  dc:title ?title ;
+  wp:organism ?organism ;
+  wp:organismName "Homo sapiens"^^xsd:string ;
+  wp:ontologyTag ?pwo.
+  FILTER (?pwo != cur:Reactome_Approved)
+}
