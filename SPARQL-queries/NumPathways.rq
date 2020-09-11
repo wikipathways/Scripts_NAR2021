@@ -1,0 +1,9 @@
+SELECT DISTINCT count(distinct ?pathway) as ?pathwayCount
+WHERE {
+  ?pathway a wp:Pathway;
+  dc:title ?title ;
+  wp:organism ?organism ;
+  wp:organismName "Homo sapiens"^^xsd:string ;
+  wp:ontologyTag ?pwo.
+  FILTER (?pwo != cur:Reactome_Approved)
+}
