@@ -1,0 +1,10 @@
+SELECT DISTINCT count( ?pubmed) as ?pubmedCount
+WHERE {
+  ?pubmed a wp:PublicationReference ;
+  dcterms:isPartOf ?pathway.
+  ?pathway a wp:Pathway;
+  wp:organism ?organism ;
+  wp:organismName "Homo sapiens"^^xsd:string ;
+  wp:ontologyTag ?pwo.
+  FILTER (?pwo != cur:Reactome_Approved)
+}
