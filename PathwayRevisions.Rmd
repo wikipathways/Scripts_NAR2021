@@ -1,0 +1,132 @@
+
+Load required libraries
+```{r}
+library(rWikiPathways)
+library(ggplot2)
+```
+
+# Local settings
+```{r}
+options(scipen=999)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+```
+
+
+# Create local revision history
+```{r}
+pathways <- rWikiPathways::listPathways()
+for(p in pathways$id) {
+  if(!file.exists(paste0("history/",p,".txt"))) {
+    hist <- do.call(rbind.data.frame, rWikiPathways::getPathwayHistory(p, 2005))
+    write.table(hist[,c(1,3,4)],file=paste0("history/",p,".txt"),quote = F,row.names = F,col.names = T, sep="\t")
+  }
+}
+```
+
+# NUMBER REVISIONS (TOTAL AND ) PER YEAR FOR TABLE 1
+```{r}
+pathways <- rWikiPathways::listPathways()
+test <- do.call(rbind.data.frame, rWikiPathways::getPathwaysByCurationTag("Curation:Tutorial"))
+pathways <- pathways[which(!(pathways$id %in% test[,1])),]
+
+num.year.revisions <- data.frame(c(2015:2020),c(2015:2020))
+colnames(num.year.revisions) <- c('year','num.rev')
+num.year.revisions$num.rev <- 0
+
+for(year in c(2015:2020)) {
+  count.total <- 0
+  count <- 0
+  for(p in pathways$id) {
+    history <- read.table(file = paste0("history/", p,".txt"),header = T, sep="\t")
+    ts <- as.numeric(paste0(year,'0910000000'))
+      
+    history <- history[which(history$timestamp < ts),]
+    num.revs <- length(history$revision)
+    count.total <- count.total+num.revs
+      
+    history <- history[which(history$user!='MaintBot'),]
+    num.revs <- length(history$revision)
+    count <- count+num.revs
+  }
+  num.year.revisions[which(num.year.revisions$year==year),'num.rev'] <- count.total
+  num.year.revisions[which(num.year.revisions$year==year),'num.rev.user'] <- count
+}
+```
+
+```{r}
+# SCATTERPLOT HSA CURATED COLLECTION 2017-2020
+pathways.hsa <- rWikiPathways::listPathways("Homo sapiens")
+cur <- do.call(rbind.data.frame, rWikiPathways::getPathwaysByCurationTag("Curation:AnalysisCollection"))
+pathways.hsa.cur <- pathways.hsa[which(pathways.hsa$id %in% cur[,1]),]
+
+pathways.hsa.cur.2017 <- pathways.hsa.cur
+
+
+for(p in pathways.hsa.cur.2017$id) {
+  history <- read.table(file = paste0("history/", p,".txt"),header = T, sep="\t")
+  history.2017 <- history[which(history$timestamp > 20170910000000),]
+  num.revs <- length(history.2017$revision)
+  pathways.hsa.cur.2017[which(pathways.hsa.cur.2017$id == p),'num.revs'] <- num.revs
+  num.curators <- length(unique(history.2017$user))
+  pathways.hsa.cur.2017[which(pathways.hsa.cur.2017$id == p),'num.curators'] <- num.curators
+}
+
+pathways.hsa.cur.2017$density <- fields::interp.surface(MASS::kde2d(pathways.hsa.cur.2017$num.curators, pathways.hsa.cur.2017$num.revs),pathways.hsa.cur.2017[,c("num.curators", "num.revs")])
+
+ggplot(pathways.hsa.cur.2017, aes(x=num.curators, y=num.revs, color = num.curators, alpha = 1/(0.2+density))) + geom_point() + geom_smooth(method="loess", se=F) +
+  geom_count(aes(size = ..n..), show.legend = FALSE) + scale_size(range = c(.1, 10)) +
+  scale_x_continuous(name="Number of curators", breaks=c(0,1,2,3,4,5,6,7,8,9)) + 
+  scale_y_continuous(name="Number of revs") +
+  scale_color_gradient(low = "#0091ff", high = "#f0650e")
+```
+
+
+```{r}
+pathways.hsa <- rWikiPathways::listPathways("Homo sapiens")
+cur <- do.call(rbind.data.frame, rWikiPathways::getPathwaysByCurationTag("Curation:AnalysisCollection"))
+pathways.hsa.cur <- pathways.hsa[which(pathways.hsa$id %in% cur[,1]),]
+p.data <- pathways.hsa.cur
+
+for(p in p.data$id) {
+  history <- read.table(file = paste0("history/", p,".txt"),header = T, sep="\t")
+  h <- history[which(history$timestamp < 20170910000000),]
+  p.data[which(p.data$id == p),'2017-09.rev'] <- length(h$revision)
+  p.data[which(p.data$id == p),'2017-09.cur'] <- length(unique(h$user))
+  
+  
+  h <- history[which(history$timestamp < 20180310000000),]
+  p.data[which(p.data$id == p),'2018-03.rev'] <- length(h$revision)
+  p.data[which(p.data$id == p),'2018-03.cur'] <- length(unique(h$user))
+  
+  h <- history[which(history$timestamp < 20180910000000),]
+  p.data[which(p.data$id == p),'2018-09.rev'] <- length(h$revision)
+  p.data[which(p.data$id == p),'2018-09.cur'] <- length(unique(h$user))
+  
+  
+  h <- history[which(history$timestamp < 20190310000000),]
+  p.data[which(p.data$id == p),'2019-03.rev'] <- length(h$revision)
+  p.data[which(p.data$id == p),'2019-03.cur'] <- length(unique(h$user))
+  
+  h <- history[which(history$timestamp < 20190910000000),]
+  p.data[which(p.data$id == p),'2019-09.rev'] <- length(h$revision)
+  p.data[which(p.data$id == p),'2019-09.cur'] <- length(unique(h$user))
+  
+  
+  h <- history[which(history$timestamp < 20200310000000),]
+  p.data[which(p.data$id == p),'2020-03.rev'] <- length(h$revision)
+  p.data[which(p.data$id == p),'2020-03.cur'] <- length(unique(h$user))
+  
+  h <- history[which(history$timestamp < 20200910000000),]
+  p.data[which(p.data$id == p),'2020-09.rev'] <- length(h$revision)
+  p.data[which(p.data$id == p),'2020-09.cur'] <- length(unique(h$user))
+}
+
+df <- data.frame(pw=p.data$id, d201709=p.data$`2017-09.rev`, 
+                 d201803=p.data$`2018-03.rev`,d201809=p.data$`2018-09.rev`,
+                 d201903=p.data$`2019-03.rev`,d201909=p.data$`2019-09.rev`,
+                 d202003=p.data$`2020-03.rev`,d202009=p.data$`2020-09.rev`)
+
+dfm <- melt(df, id.vars="pw")
+
+ggplot(dfm, aes(x=as.numeric(variable), y=log(value,2), colour=pw)) + geom_line() + theme(legend.position = "none") 
+```
