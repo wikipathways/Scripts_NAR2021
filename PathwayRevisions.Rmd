@@ -3,6 +3,8 @@ Load required libraries
 ```{r}
 library(rWikiPathways)
 library(ggplot2)
+library(ggExtra)
+
 ```
 
 # Local settings
@@ -59,74 +61,31 @@ pathways.hsa <- rWikiPathways::listPathways("Homo sapiens")
 cur <- do.call(rbind.data.frame, rWikiPathways::getPathwaysByCurationTag("Curation:AnalysisCollection"))
 pathways.hsa.cur <- pathways.hsa[which(pathways.hsa$id %in% cur[,1]),]
 
-pathways.hsa.cur.2017 <- pathways.hsa.cur
+pathways.hsa.cur <- pathways.hsa.cur
 
 
-for(p in pathways.hsa.cur.2017$id) {
+for(p in pathways.hsa.cur$id) {
   history <- read.table(file = paste0("history/", p,".txt"),header = T, sep="\t")
-  history.2017 <- history[which(history$timestamp > 20170910000000),]
-  num.revs <- length(history.2017$revision)
-  pathways.hsa.cur.2017[which(pathways.hsa.cur.2017$id == p),'num.revs'] <- num.revs
-  num.curators <- length(unique(history.2017$user))
-  pathways.hsa.cur.2017[which(pathways.hsa.cur.2017$id == p),'num.curators'] <- num.curators
+  num.revs <- length(history$revision)
+  pathways.hsa.cur[which(pathways.hsa.cur$id == p),'num.revs'] <- num.revs
+  num.curators <- length(unique(history$user))
+  pathways.hsa.cur[which(pathways.hsa.cur$id == p),'num.curators'] <- num.curators
 }
 
-pathways.hsa.cur.2017$density <- fields::interp.surface(MASS::kde2d(pathways.hsa.cur.2017$num.curators, pathways.hsa.cur.2017$num.revs),pathways.hsa.cur.2017[,c("num.curators", "num.revs")])
+# percentages 
+length(pathways.hsa.cur[which(pathways.hsa.cur$num.curators >= 3 & pathways.hsa.cur$num.revs > 8),]$id)/length(pathways.hsa.cur$id)
+length(pathways.hsa.cur[which(pathways.hsa.cur$num.curators >= 5 & pathways.hsa.cur$num.revs > 15),]$id)/length(pathways.hsa.cur$id)
+length(pathways.hsa.cur[which(pathways.hsa.cur$num.curators >= 8 & pathways.hsa.cur$num.revs > 30),]$id)/length(pathways.hsa.cur$id)
+length(pathways.hsa.cur[which(pathways.hsa.cur$num.curators >= 10 & pathways.hsa.cur$num.revs > 60),]$id)/length(pathways.hsa.cur$id)
 
-ggplot(pathways.hsa.cur.2017, aes(x=num.curators, y=num.revs, color = num.curators, alpha = 1/(0.2+density))) + geom_point() + geom_smooth(method="loess", se=F) +
+pathways.hsa.cur$density <- fields::interp.surface(MASS::kde2d(pathways.hsa.cur$num.revs, pathways.hsa.cur$num.curators),pathways.hsa.cur[,c("num.revs", "num.curators")])
+
+ggplot(pathways.hsa.cur, aes(x=num.revs, y=num.curators, color = num.revs, alpha = 1/(0.1+density))) + geom_point() + #geom_smooth(method="lm", se=F) +
   geom_count(aes(size = ..n..), show.legend = FALSE) + scale_size(range = c(.1, 10)) +
-  scale_x_continuous(name="Number of curators", breaks=c(0,1,2,3,4,5,6,7,8,9)) + 
-  scale_y_continuous(name="Number of revs") +
-  scale_color_gradient(low = "#0091ff", high = "#f0650e")
-```
+  scale_x_continuous(name="Number of revs", trans = "log2") + 
+  scale_y_continuous(name="Number of curators", breaks=c(0:20)) +
+  scale_color_gradient(low = "#A9A9A9", high = "#FF0000") +
+  theme(legend.position = "none") 
 
-
-```{r}
-pathways.hsa <- rWikiPathways::listPathways("Homo sapiens")
-cur <- do.call(rbind.data.frame, rWikiPathways::getPathwaysByCurationTag("Curation:AnalysisCollection"))
-pathways.hsa.cur <- pathways.hsa[which(pathways.hsa$id %in% cur[,1]),]
-p.data <- pathways.hsa.cur
-
-for(p in p.data$id) {
-  history <- read.table(file = paste0("history/", p,".txt"),header = T, sep="\t")
-  h <- history[which(history$timestamp < 20170910000000),]
-  p.data[which(p.data$id == p),'2017-09.rev'] <- length(h$revision)
-  p.data[which(p.data$id == p),'2017-09.cur'] <- length(unique(h$user))
-  
-  
-  h <- history[which(history$timestamp < 20180310000000),]
-  p.data[which(p.data$id == p),'2018-03.rev'] <- length(h$revision)
-  p.data[which(p.data$id == p),'2018-03.cur'] <- length(unique(h$user))
-  
-  h <- history[which(history$timestamp < 20180910000000),]
-  p.data[which(p.data$id == p),'2018-09.rev'] <- length(h$revision)
-  p.data[which(p.data$id == p),'2018-09.cur'] <- length(unique(h$user))
-  
-  
-  h <- history[which(history$timestamp < 20190310000000),]
-  p.data[which(p.data$id == p),'2019-03.rev'] <- length(h$revision)
-  p.data[which(p.data$id == p),'2019-03.cur'] <- length(unique(h$user))
-  
-  h <- history[which(history$timestamp < 20190910000000),]
-  p.data[which(p.data$id == p),'2019-09.rev'] <- length(h$revision)
-  p.data[which(p.data$id == p),'2019-09.cur'] <- length(unique(h$user))
-  
-  
-  h <- history[which(history$timestamp < 20200310000000),]
-  p.data[which(p.data$id == p),'2020-03.rev'] <- length(h$revision)
-  p.data[which(p.data$id == p),'2020-03.cur'] <- length(unique(h$user))
-  
-  h <- history[which(history$timestamp < 20200910000000),]
-  p.data[which(p.data$id == p),'2020-09.rev'] <- length(h$revision)
-  p.data[which(p.data$id == p),'2020-09.cur'] <- length(unique(h$user))
-}
-
-df <- data.frame(pw=p.data$id, d201709=p.data$`2017-09.rev`, 
-                 d201803=p.data$`2018-03.rev`,d201809=p.data$`2018-09.rev`,
-                 d201903=p.data$`2019-03.rev`,d201909=p.data$`2019-09.rev`,
-                 d202003=p.data$`2020-03.rev`,d202009=p.data$`2020-09.rev`)
-
-dfm <- melt(df, id.vars="pw")
-
-ggplot(dfm, aes(x=as.numeric(variable), y=log(value,2), colour=pw)) + geom_line() + theme(legend.position = "none") 
+#ggExtra::ggMarginal(p, type = "histogram")
 ```
