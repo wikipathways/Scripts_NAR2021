@@ -1,4 +1,5 @@
-SELECT count(distinct ?metabolite) as ?metaboliteCount 
+#This query counts all metabolites, and counts the ones without any of the 5 database identifier types by uncommenting the lines below. Subtracting these gives the number of metabolites with at least one identifier from one of the five database identifier types.
+SELECT count(distinct ?metabolite) as ?metaboliteCount  #remove 'distinct' to count all metabolites
 WHERE {
   ?metabolite a wp:Metabolite ;
   dcterms:isPartOf ?pw.
@@ -8,15 +9,16 @@ WHERE {
   wp:organismName "Homo sapiens"^^xsd:string ;
   wp:ontologyTag ?pwo.
   FILTER (?pwo != cur:Reactome_Approved)
-  OPTIONAL { ?metabolite wp:bdbWikidata ?wikidata . }
-  OPTIONAL { ?metabolite wp:bdbChEBI ?chebi . }
-  OPTIONAL { ?metabolite wp:bdbHmdb ?hmdb . }
-  OPTIONAL { ?metabolite wp:bdbChemspider ?chemspider . }
-  OPTIONAL { ?metabolite wp:bdbPubChem ?pubchem . }
+#  OPTIONAL { ?metabolite wp:bdbWikidata ?wikidata . }  #uncomment this line to look for wikidata IDs
+#  OPTIONAL { ?metabolite wp:bdbChEBI ?chebi . }  #uncomment this line to look for ChEBI IDs
+#  OPTIONAL { ?metabolite wp:bdbHmdb ?hmdb . }  #uncomment this line to look for HMDB IDs
+#  OPTIONAL { ?metabolite wp:bdbChemspider ?chemspider . }  #uncomment this line to look for ChemSpider IDs
+#  OPTIONAL { ?metabolite wp:bdbPubChem ?pubchem . }  #uncomment this line to look for PubChem IDs
 
-  FILTER (!BOUND(?wikidata))
-  FILTER (!BOUND(?chebi))
-  FILTER (!BOUND(?hmdb))
-  FILTER (!BOUND(?chemspider))
-  FILTER (!BOUND(?pubchem))
+#  FILTER (!BOUND(?wikidata))  #uncomment this line to filter all metabolites without a wikidata ID
+#  FILTER (!BOUND(?chebi))  #uncomment this line to filter all metabolites without a ChEBI ID
+#  FILTER (!BOUND(?hmdb))  #uncomment this line to filter all metabolites without a HMDB ID
+#  FILTER (!BOUND(?chemspider))  #uncomment this line to filter all metabolites without a ChemSpider ID
+#  FILTER (!BOUND(?pubchem))  #uncomment this line to filter all metabolites without a PubChem ID
 }
+
