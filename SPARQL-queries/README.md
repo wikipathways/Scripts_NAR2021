@@ -2,8 +2,10 @@ The SPARQL queries stored in [NumPathways.rq](https://github.com/wikipathways/Sc
 
 Every month there is a new data release by WikiPathways, all of which are stored in [data.wikipathways.org](http://data.wikipathways.org/). The protocol for getting RDF data in a local Virtuoso SPARQL endpoint will be described step by step.
 
-The requirements for updating the WikiPathwys SPARQL endpoint with this protocol:
+The requirements for updating the WikiPathwys SPARQL endpoint with this protocol (tested in Linux):
 - Ability to use [Docker](https://docs.docker.com/get-docker/) on your system
+- Ability to download files with `wget` command
+- Ability to enter localhost URLs
 
 ## Step 1 - Download the data and prepare for loading
 Make a folder named to store all RDF files to load in a SPARQL endpoint.  Go to [data.wikipathways.org](http://data.wikipathways.org/) and note the `Filename` (left column) of the data release that you want to use SPARQL queries on.
@@ -38,6 +40,7 @@ Enter the created container, relocate the `WikiPathways.ttl`:
 ```
 sudo docker exec -it WikiPathways bash
 ```
+When entered, move the file:
 ```
 mv data/WikiPathways.ttl .
 exit
@@ -101,3 +104,5 @@ Exit the container:
 ```
 quit;
 ```
+
+Now the Virtuoso SPARQL endpoint should be running with WikiPathways RDF, with the version you selected. Go to [localhost:8890/sparql/](http://localhost:8890/sparql/) to access the SPARQL endpoint and execute queries.
