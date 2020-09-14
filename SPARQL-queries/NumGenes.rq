@@ -1,4 +1,4 @@
-SELECT DISTINCT count(?ensId) as ?UniqueEnsembl
+SELECT DISTINCT count(distinct ?ensId) as ?UniqueEnsembl #remove 'distinct' to count all ensembl IDs
 WHERE {
   ?dataNodes a wp:DataNode ;
   wp:bdbEnsembl ?ensId ;
