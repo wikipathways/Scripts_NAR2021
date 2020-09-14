@@ -3,8 +3,6 @@ Load required libraries
 ```{r}
 library(rWikiPathways)
 library(ggplot2)
-library(ggExtra)
-
 ```
 
 # Local settings
@@ -82,10 +80,8 @@ pathways.hsa.cur$density <- fields::interp.surface(MASS::kde2d(pathways.hsa.cur$
 
 ggplot(pathways.hsa.cur, aes(x=num.revs, y=num.curators, color = num.revs, alpha = 1/(0.1+density))) + geom_point() + #geom_smooth(method="lm", se=F) +
   geom_count(aes(size = ..n..), show.legend = FALSE) + scale_size(range = c(.1, 10)) +
-  scale_x_continuous(name="Number of revs", trans = "log2") + 
-  scale_y_continuous(name="Number of curators", breaks=c(0:20)) +
+  scale_x_continuous(name="Number of revisions", trans = "log2") + 
+  scale_y_continuous(name="Number of contributors", breaks=c(0:20)) +
   scale_color_gradient(low = "#A9A9A9", high = "#FF0000") +
-  theme(legend.position = "none") 
-
-#ggExtra::ggMarginal(p, type = "histogram")
+  theme(legend.position = "none", text = element_text(size=15)) 
 ```
