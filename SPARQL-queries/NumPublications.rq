@@ -1,4 +1,4 @@
-SELECT DISTINCT count(distinct ?pubmed) as ?pubmedCount #remove 'distinct' to count all ensembl IDs
+SELECT DISTINCT count(distinct ?pubmed) as ?pubmedCount #remove 'distinct' to count all publications
 WHERE {
   ?pubmed a wp:PublicationReference ;
   dcterms:isPartOf ?pathway.
