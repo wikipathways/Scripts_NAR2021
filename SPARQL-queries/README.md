@@ -1,5 +1,7 @@
 The SPARQL queries stored in [NumPathways.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumPathways.rq), [NumGenes.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumGenes.rq), [NumMetabolites.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumMetabolites.rq), and [NumPublications.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumPublications.rq) can be used to extract the number of Human pathways, and the number of (unique) genes and proteins, metabolites and publications in Human pathways of WikiPathways, excluding Reactome pathways. These SPARQL queries can be entered in the [WikiPathways SNORQL UI](http://sparql.wikipathways.org) on the most recent data released. For using the SPARQL queries on older data releases (found on [data.wikipathways.org](http://data.wikipathways.org)), local SPARQL endpoints can be deployed and loaded with RDF data using instructions below to set up local SPARQL endpoints using Docker. 
 
+## Setting up a local SPARQL endpoint
+
 Every month there is a new data release by WikiPathways, all of which are stored in [data.wikipathways.org](http://data.wikipathways.org/). The protocol for getting RDF data in a local Virtuoso SPARQL endpoint will be described step by step.
 
 The requirements for updating the WikiPathwys SPARQL endpoint with this protocol (tested in Linux):
