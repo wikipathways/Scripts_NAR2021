@@ -1,3 +1,18 @@
+---
+title: "Analysis of pathway revisions over time"
+author: "mkutmon"
+date: "2020-09-15"
+version: 1.0
+
+sessionInfo:
+  R version 4.0.2 (2020-06-22)
+  Platform: x86_64-w64-mingw32/x64 (64-bit)
+  Running under: Windows 10 x64 (build 17763)
+
+  Packages:
+    ggplot2_3.3.2
+    rWikiPathways_1.8.4
+---
 
 Load required libraries
 ```{r}
@@ -11,8 +26,8 @@ options(scipen=999)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ```
 
-
-# Create local revision history
+# CREATE LOCAL REVISION HISTORY
+(delete history folder and refill if you want to use data after 2020-09-10)
 ```{r}
 pathways <- rWikiPathways::listPathways()
 for(p in pathways$id) {
@@ -23,7 +38,8 @@ for(p in pathways$id) {
 }
 ```
 
-# NUMBER REVISIONS (TOTAL AND ) PER YEAR FOR TABLE 1
+# NUMBER REVISIONS (TOTAL AND USER) PER YEAR FOR TABLE 1
+Always using September 10 releases
 ```{r}
 pathways <- rWikiPathways::listPathways()
 test <- do.call(rbind.data.frame, rWikiPathways::getPathwaysByCurationTag("Curation:Tutorial"))
@@ -53,8 +69,8 @@ for(year in c(2015:2020)) {
 }
 ```
 
+# FIGURE 1: SCATTERPLOT HSA CURATED COLLECTION 2017-2020
 ```{r}
-# SCATTERPLOT HSA CURATED COLLECTION 2017-2020
 pathways.hsa <- rWikiPathways::listPathways("Homo sapiens")
 cur <- do.call(rbind.data.frame, rWikiPathways::getPathwaysByCurationTag("Curation:AnalysisCollection"))
 pathways.hsa.cur <- pathways.hsa[which(pathways.hsa$id %in% cur[,1]),]
@@ -70,18 +86,21 @@ for(p in pathways.hsa.cur$id) {
   pathways.hsa.cur[which(pathways.hsa.cur$id == p),'num.curators'] <- num.curators
 }
 
+pathways.hsa.cur$density <- fields::interp.surface(MASS::kde2d(pathways.hsa.cur$num.revs, pathways.hsa.cur$num.curators),pathways.hsa.cur[,c("num.revs", "num.curators")])
+
+ggplot(pathways.hsa.cur, aes(x=num.revs, y=num.curators, color = num.revs, alpha = 1/(0.1+density))) + 
+  geom_point() + geom_count(aes(size = ..n..), show.legend = FALSE) + scale_size(range = c(.1, 10)) +
+  scale_x_continuous(name="Number of revisions", trans = "log2") + 
+  scale_y_continuous(name="Number of contributors", breaks=c(0:20)) +
+  scale_color_gradient(low = "#3090C7", high = "#3090C7") +
+  theme(legend.position = "none", text = element_text(size=15)) 
+```
+
+# CALCULATING PERCENTAGES OF REVISIONS / CONTRIBUTORS
+```{r}
 # percentages 
 length(pathways.hsa.cur[which(pathways.hsa.cur$num.curators >= 3 & pathways.hsa.cur$num.revs > 8),]$id)/length(pathways.hsa.cur$id)
 length(pathways.hsa.cur[which(pathways.hsa.cur$num.curators >= 5 & pathways.hsa.cur$num.revs > 15),]$id)/length(pathways.hsa.cur$id)
 length(pathways.hsa.cur[which(pathways.hsa.cur$num.curators >= 8 & pathways.hsa.cur$num.revs > 30),]$id)/length(pathways.hsa.cur$id)
 length(pathways.hsa.cur[which(pathways.hsa.cur$num.curators >= 10 & pathways.hsa.cur$num.revs > 60),]$id)/length(pathways.hsa.cur$id)
-
-pathways.hsa.cur$density <- fields::interp.surface(MASS::kde2d(pathways.hsa.cur$num.revs, pathways.hsa.cur$num.curators),pathways.hsa.cur[,c("num.revs", "num.curators")])
-
-ggplot(pathways.hsa.cur, aes(x=num.revs, y=num.curators, color = num.revs, alpha = 1/(0.1+density))) + geom_point() + #geom_smooth(method="lm", se=F) +
-  geom_count(aes(size = ..n..), show.legend = FALSE) + scale_size(range = c(.1, 10)) +
-  scale_x_continuous(name="Number of revisions", trans = "log2") + 
-  scale_y_continuous(name="Number of contributors", breaks=c(0:20)) +
-  scale_color_gradient(low = "#A9A9A9", high = "#FF0000") +
-  theme(legend.position = "none", text = element_text(size=15)) 
 ```
