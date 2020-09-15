@@ -1,4 +1,4 @@
-##Queries for data analysis on RDF data for Blau Pathways, NAR 2020 paper
+##Queries for data analysis on RDF data for IEM Pathways, NAR 2020 paper
 
 ## OMIM IDs on text labels
 
@@ -18,7 +18,7 @@ querywp <-
   "
 SELECT count(distinct ?omim) as ?diseaseIDs
 WHERE {
-?pathway wp:ontologyTag cur:Blau ; 
+?pathway wp:ontologyTag cur:IEM ; 
          a wp:Pathway . 
 ?diseaseNode a gpml:Label;
              gpml:href ?omim .
@@ -34,7 +34,7 @@ querydoid <-
 SELECT count(DISTINCT ?DiseaseOnt) as ?DOIDs
 WHERE {
   ?pathway wp:diseaseOntologyTag ?DiseaseOnt;
-           wp:ontologyTag cur:Blau .
+           wp:ontologyTag cur:IEM .
 }
 "
 
