@@ -1,6 +1,6 @@
 The SPARQL queries under [IEM_Data_NAR.R](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/IEM_data_NAR.R) have been run on the live [SPARQL endpoint](http://sparql.wikipathways.org) (Sept.2020 data), using R studio (Version 1.1.419) on Operating System Linux (x86_64) using R version 3.4.4 (2018-03-15). These queries detail how to obtain the OMIM identifiers (from the GPML RDF, since these are stored on textLabels and therefor not in the WP RDF) and the Disease Ontology terms for pathways linked to the IEM portal (curation term in RDF was Blau, will be IEM for Oct. release).
 
-The SPARQL queries stored in [NumPathways.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumPathways.rq), [NumGenes.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumGenes.rq), [NumMetabolites.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumMetabolites.rq), and [NumPublications.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumPublications.rq) can be used to extract the number of Human pathways, and the number of (unique) genes and proteins, metabolites and publications in Human pathways of WikiPathways, excluding Reactome pathways. These SPARQL queries can be entered in the [WikiPathways SNORQL UI](http://sparql.wikipathways.org) on the most recent data released. For using the SPARQL queries on older data releases (found on [data.wikipathways.org](http://data.wikipathways.org)), local SPARQL endpoints can be deployed and loaded with RDF data using instructions below to set up local SPARQL endpoints using Docker. 
+The SPARQL queries stored in [NumPathways.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumPathways.rq), [NumGenes.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumGenes.rq), [NumMetabolites.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumMetabolites.rq), [NumInteractions.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumInteractions.rq), and [NumPublications.rq](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/NumPublications.rq) can be used to extract the number of Human pathways, and the number of (unique) genes and proteins, metabolites and publications in Human pathways of WikiPathways. These SPARQL queries can be entered in the [WikiPathways SNORQL UI](http://sparql.wikipathways.org) on the most recent data released. For using the SPARQL queries on older data releases (found on [data.wikipathways.org](http://data.wikipathways.org)), local SPARQL endpoints can be deployed and loaded with RDF data using instructions below to set up local SPARQL endpoints using Docker. If preferred, it is possible to extract the data using the [WikiPathwaysStats.ipynb](https://github.com/wikipathways/Scripts_NAR2021/blob/master/SPARQL-queries/WikiPathwaysStats.ipynb) Jupyter notebook.
 
 ## Setting up a local SPARQL endpoint
 
@@ -13,11 +13,13 @@ The requirements for updating the WikiPathwys SPARQL endpoint with this protocol
 
 ## Step 1 - Download the data and prepare for loading
 Make a folder named to store all RDF files to load in a SPARQL endpoint.  Go to [data.wikipathways.org](http://data.wikipathways.org/) and note the `Filename` (left column) of the data release that you want to use SPARQL queries on.
-Next, enter the command-line, enter the created folder and execute the following commands to download the RDF files, and replace "[release]" with the `Filename` you noted. For example, the data released on September 10, 2020 has `Filename`: 20200910. Note that the "[release]" is there 2 times in the first 4 commands.
+Next, enter the command-line, enter the created folder and execute the following commands to download the RDF files, and replace "[release]" with the `Filename` you noted. For example, the data released on September 10, 2020 has `Filename`: 20200910. Note that the "[release]" is there 2 times in the first 4 commands. To reproduce the WikiPathways statistics, only the `-rdf-wp.zip` file is required.
 
 ```
-wget http://data.wikipathways.org/[release]/rdf/wikipathways-[release]-rdf-gpml.zip
 wget http://data.wikipathways.org/[release]/rdf/wikipathways-[release]-rdf-wp.zip
+```
+```
+wget http://data.wikipathways.org/[release]/rdf/wikipathways-[release]-rdf-gpml.zip
 wget http://data.wikipathways.org/[release]/rdf/wikipathways-[release]-rdf-authors.zip
 wget http://data.wikipathways.org/[release]/rdf/wikipathways-[release]-rdf-void.ttl
 wget -O wpvocab.ttl https://www.w3.org/2012/pyRdfa/extract?uri=http://vocabularies.wikipathways.org/wp#
