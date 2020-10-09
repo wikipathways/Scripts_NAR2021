@@ -6,7 +6,5 @@ WHERE {
   ?pw a wp:Pathway;
   dc:title ?title ;
   wp:organism ?organism ;
-  wp:organismName "Homo sapiens"^^xsd:string ;
-  wp:ontologyTag ?pwo.
-  FILTER (?pwo != cur:Reactome_Approved)
+  wp:organismName "Homo sapiens"^^xsd:string .
 }

@@ -1,0 +1,8 @@
+SELECT count( ?interaction) as ?countInteraction
+WHERE {
+  ?interaction a wp:Interaction ;
+  dcterms:isPartOf ?pathway.
+  ?pathway a wp:Pathway;
+  wp:organism ?organism ;
+  wp:organismName "Homo sapiens"^^xsd:string .
+}
